@@ -57,7 +57,7 @@ namespace WOPIHostNetV1.util
                 try
                 {
                     //Console.WriteLine("1111...");
-                    Console.WriteLine(context.Request.HttpMethod + @" " + context.Request.Url.AbsolutePath);
+                    Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff") + " " + context.Request.HttpMethod + @" " + context.Request.Url.AbsolutePath);
                     var stringarr = context.Request.Url.AbsolutePath.Split('/');
                     var access_token = context.Request.QueryString["access_token"];
 
@@ -87,9 +87,11 @@ namespace WOPIHostNetV1.util
                         //Console.WriteLine("2222...");
                         var fileExt = filename.Substring(filename.LastIndexOf('.') + 1);
                         if (fileExt.ToLower().Contains("xlsx"))
-                            editSession = new FileSession(filename, docInfo.filePath, docInfo.author, docInfo.author, docInfo.mail, false);
+                            editSession = new FileSession(filename, docInfo.filePath, docInfo.loginUser, docInfo.author,
+                                docInfo.mail, false);
                         else
-                            editSession = new CobaltSession(filename, docInfo.filePath, docInfo.author, docInfo.author, docInfo.mail, false);
+                            editSession = new CobaltSession(filename, docInfo.filePath, docInfo.loginUser,
+                                docInfo.author, docInfo.mail, false);
                         CobaltSessionManager.Instance.AddSession(editSession);
                     }
 
@@ -97,24 +99,26 @@ namespace WOPIHostNetV1.util
                     {
                         //Console.WriteLine("4444...");
                         //request of checkfileinfo, will be called first
-                        var memoryStream = new MemoryStream();
-                        var json = new DataContractJsonSerializer(typeof(WopiCheckFileInfo));
-                        json.WriteObject(memoryStream, editSession.GetCheckFileInfo(access_token));
-                        memoryStream.Flush();
-                        memoryStream.Position = 0;
-                        StreamReader streamReader = new StreamReader(memoryStream);
-                        var jsonResponse = Encoding.UTF8.GetBytes(streamReader.ReadToEnd());
-                        
-                        context.Response.AddHeader("Cache-Control", "no-cache");
-                        context.Response.AddHeader("Pragma", "no-cache");
-                        context.Response.AddHeader("Expires", "-1");
-                        context.Response.ContentType = @"application/json";
-                        context.Response.ContentLength64 = jsonResponse.Length;
-                        context.Response.OutputStream.Write(jsonResponse, 0, jsonResponse.Length);
-                        context.Response.OutputStream.Flush();
-                        context.Response.StatusCode = (int)HttpStatusCode.OK;
-                        
-                        context.Response.Close();
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            var json = new DataContractJsonSerializer(typeof(WopiCheckFileInfo));
+                            json.WriteObject(memoryStream, editSession.GetCheckFileInfo(access_token));
+                            memoryStream.Flush();
+                            memoryStream.Position = 0;
+                            StreamReader streamReader = new StreamReader(memoryStream);
+                            var jsonResponse = Encoding.UTF8.GetBytes(streamReader.ReadToEnd());
+
+                            context.Response.AddHeader("Cache-Control", "no-cache");
+                            context.Response.AddHeader("Pragma", "no-cache");
+                            context.Response.AddHeader("Expires", "-1");
+                            context.Response.ContentType = @"application/json";
+                            context.Response.ContentLength64 = jsonResponse.Length;
+                            context.Response.OutputStream.Write(jsonResponse, 0, jsonResponse.Length);
+                            context.Response.OutputStream.Flush();
+                            context.Response.StatusCode = (int)HttpStatusCode.OK;
+
+                            context.Response.Close();
+                        }
                     }
                     else if (stringarr.Length == 5 && stringarr[4].Equals(@"contents"))
                     {
@@ -161,7 +165,7 @@ namespace WOPIHostNetV1.util
                             {
 
                                 editSession.Save();
-
+                                CobaltSessionManager.Instance.DelSession(editSession);
                             }
                         }
                         var response = requestBatch.SerializeOutputToProtocol(protocolVersion);

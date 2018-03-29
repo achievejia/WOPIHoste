@@ -17,6 +17,7 @@ namespace WOPIHostNetV1.util
         {
             try
             {
+                //uuid = uuid + "==";
                 var url = System.Configuration.ConfigurationManager.AppSettings["InfoURL"];
                 var result = httpUtil.DoGet(url + $"?uuid={uuid}");
                 Console.WriteLine("请求返回结果：" + result);
