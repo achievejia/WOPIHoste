@@ -1,0 +1,10 @@
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\bin\Debug\WOPIHostNet.exe.config
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\bin\Debug\WOPIHostNet.exe
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\bin\Debug\WOPIHostNet.pdb
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\bin\Debug\Microsoft.CobaltCore.dll
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\bin\Debug\Newtonsoft.Json.dll
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\bin\Debug\Newtonsoft.Json.xml
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\obj\Debug\WOPIHostNet.csproj.CoreCompileInputs.cache
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\obj\Debug\WOPIHostNet.csproj.CopyComplete
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\obj\Debug\WOPIHostNet.exe
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNet\obj\Debug\WOPIHostNet.pdb

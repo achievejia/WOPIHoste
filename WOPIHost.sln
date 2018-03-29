@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2011
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WOPIHost", "WOPIHost\WOPIHost.csproj", "{56C15A52-CA53-479F-932F-EA1AB880E748}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOPIHostNet", "WOPIHostNet\WOPIHostNet.csproj", "{B384D59C-5379-43FE-A4F4-AEC4C2136CA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOPIHostNetV1", "WOPIHostNetV1\WOPIHostNetV1.csproj", "{ED9C0CC3-71E8-4C25-B2E5-1F9CA45DD1CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56C15A52-CA53-479F-932F-EA1AB880E748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56C15A52-CA53-479F-932F-EA1AB880E748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56C15A52-CA53-479F-932F-EA1AB880E748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56C15A52-CA53-479F-932F-EA1AB880E748}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B384D59C-5379-43FE-A4F4-AEC4C2136CA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B384D59C-5379-43FE-A4F4-AEC4C2136CA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B384D59C-5379-43FE-A4F4-AEC4C2136CA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B384D59C-5379-43FE-A4F4-AEC4C2136CA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED9C0CC3-71E8-4C25-B2E5-1F9CA45DD1CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED9C0CC3-71E8-4C25-B2E5-1F9CA45DD1CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED9C0CC3-71E8-4C25-B2E5-1F9CA45DD1CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED9C0CC3-71E8-4C25-B2E5-1F9CA45DD1CC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C787654-CA9D-45BC-9E07-E66CB06C6CC1}
+	EndGlobalSection
+EndGlobal

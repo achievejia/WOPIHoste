@@ -1,0 +1,14 @@
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\bin\Debug\netcoreapp2.0\WOPIHost.deps.json
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\bin\Debug\netcoreapp2.0\WOPIHost.runtimeconfig.json
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\bin\Debug\netcoreapp2.0\WOPIHost.runtimeconfig.dev.json
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\bin\Debug\netcoreapp2.0\WOPIHost.dll
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\obj\Debug\netcoreapp2.0\WOPIHost.csproj.CoreCompileInputs.cache
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\obj\Debug\netcoreapp2.0\WOPIHost.AssemblyInfoInputs.cache
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\obj\Debug\netcoreapp2.0\WOPIHost.AssemblyInfo.cs
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\bin\Debug\netcoreapp2.0\WOPIHost.pdb
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\obj\Debug\netcoreapp2.0\WOPIHost.dll
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\obj\Debug\netcoreapp2.0\WOPIHost.pdb
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\bin\Debug\netcoreapp2.0\Microsoft.CobaltCore.dll
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\obj\Debug\netcoreapp2.0\WOPIHost.csproj.CopyComplete
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\bin\Debug\netcoreapp2.0\WOPIHost.dll.config
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHost\obj\Debug\netcoreapp2.0\WOPIHost.csprojResolveAssemblyReference.cache
