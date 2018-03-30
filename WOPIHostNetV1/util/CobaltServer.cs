@@ -87,12 +87,19 @@ namespace WOPIHostNetV1.util
                         //Console.WriteLine("2222...");
                         var fileExt = filename.Substring(filename.LastIndexOf('.') + 1);
                         if (fileExt.ToLower().Contains("xlsx"))
-                            editSession = new FileSession(filename, docInfo.filePath, docInfo.loginUser, docInfo.author,
+                            editSession = new FileSession(filename, docInfo.filePath, docInfo.author, docInfo.loginUser,
                                 docInfo.mail, false);
                         else
-                            editSession = new CobaltSession(filename, docInfo.filePath, docInfo.loginUser,
-                                docInfo.author, docInfo.mail, false);
+                            editSession = new CobaltSession(filename, docInfo.filePath,
+                                docInfo.author, docInfo.loginUser, docInfo.mail, false);
                         CobaltSessionManager.Instance.AddSession(editSession);
+                    }
+                    else
+                    {
+                        if (!editSession.Name.Equals(docInfo.loginUser))
+                        {
+                            editSession.Name = docInfo.loginUser;
+                        }
                     }
 
                     if (stringarr.Length == 4 && context.Request.HttpMethod.Equals(@"GET"))
