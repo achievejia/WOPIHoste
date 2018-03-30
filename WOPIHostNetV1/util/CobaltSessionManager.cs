@@ -12,7 +12,7 @@ namespace WOPIHostNetV1.util
         private Dictionary<String, EditSession> m_sessions;
         private Timer m_timer;
         private readonly int m_timeout = 60 * 60 * 1000;
-        private readonly int m_closewait = 3 * 60 * 60;
+        private readonly int m_closewait = 3 * 60;
 
         public static CobaltSessionManager Instance
         {
