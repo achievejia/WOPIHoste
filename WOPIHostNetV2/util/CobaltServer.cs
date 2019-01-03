@@ -1,39 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using Cobalt;
-using WOPIHostNetV1.model;
+using Newtonsoft.Json;
+using NLog;
+using WOPIHostNetV2.model;
 
-namespace WOPIHostNetV1.util
+namespace WOPIHostNetV2.util
 {
     public class CobaltServer
     {
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         private HttpListener m_listener;
-        private int m_port;
-        private string m_host;
+        private string _listenerURL;
         private DocumentUtil documentUtil;
 
-        public CobaltServer(string host, int port = 8080)
+        public CobaltServer(string listenerURL)
         {
-            m_host = host;
-            m_port = port;
+            _listenerURL = listenerURL;
         }
 
         public void Start()
         {
             m_listener = new HttpListener();
-            m_listener.Prefixes.Add($"http://{m_host}:{m_port}/wopi/");
+            m_listener.Prefixes.Add($"http://{_listenerURL}/");
             m_listener.Start();
-            m_listener.BeginGetContext(ProcessRequest, m_listener);
+            m_listener.BeginGetContext(new AsyncCallback(ProcessRequest), m_listener);
 
-            Console.WriteLine(@"启动Subdoc服务.");
+            logger.Info($"Suboc监听服务已启动，监听地址为：http://{_listenerURL}/");
         }
 
         public void Stop()
         {
             m_listener.Stop();
+
+            logger.Info($"Suboc监听服务已停止");
         }
 
         private void ErrorResponse(HttpListenerContext context, string errmsg)
@@ -51,54 +56,47 @@ namespace WOPIHostNetV1.util
         {
             try
             {
-                Console.WriteLine("start...");
-                HttpListener listener = (HttpListener)result.AsyncState;
-                HttpListenerContext context = listener.EndGetContext(result);
+                logger.Info($"监听中......");
+                var listener = (HttpListener)result.AsyncState;
+                var context = listener.EndGetContext(result);
                 try
                 {
-                    //Console.WriteLine("1111...");
-                    Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff") + " " + context.Request.HttpMethod + @" " + context.Request.Url.AbsolutePath);
+                    var listStr = new List<string>();
+                    foreach (var item in context.Request.Headers.AllKeys)
+                    {
+                        listStr.Add(context.Request.Headers[item]);
+                    }
+                    logger.Info($"监听内容：HTTP请求方法为【{context.Request.HttpMethod}】，HTTP请求绝对路径为【{context.Request.Url.AbsolutePath}】，HTTP请求头为【{JsonConvert.SerializeObject(context.Request.Headers.AllKeys)}】值为【{JsonConvert.SerializeObject(listStr)}】");
                     var stringarr = context.Request.Url.AbsolutePath.Split('/');
                     var access_token = context.Request.QueryString["access_token"];
 
                     if (stringarr.Length < 3 || access_token == null)
                     {
-                        Console.WriteLine(@"Invalid request");
-                        ErrorResponse(context, @"Invalid request parameter");
-                        m_listener.BeginGetContext(ProcessRequest, m_listener);
+                        logger.Info($"请求参数无效，参数为：{stringarr}，token参数为：{access_token}");
+                        ErrorResponse(context, @"无效的请求参数");
+                        m_listener.BeginGetContext(new AsyncCallback(ProcessRequest), m_listener);
                         return;
                     }
-
-                    //todo:
-
 
                     documentUtil = new DocumentUtil();
                     //string fileId = stringarr[3];
                     var docInfo = documentUtil.GetInfo(stringarr[3]);
+                    logger.Info($"文件信息为：{JsonConvert.SerializeObject(docInfo)}");
                     var filename = docInfo.fileName;
-                    //Stream gridfsStream = GetFileById(fileId);
-                    //StreamToFile(gridfsStream, filename);
 
-
-                    //use filename as session id just test, recommend use file id and lock id as session id
-                    EditSession editSession = CobaltSessionManager.Instance.GetSession(filename);
+                    EditSession editSession = CobaltSessionManager.Instance.GetSession(docInfo.uuid);
                     if (editSession == null)
                     {
-                        //Console.WriteLine("2222...");
                         var fileExt = filename.Substring(filename.LastIndexOf('.') + 1);
                         if (fileExt.ToLower().Contains("xlsx"))
-                            editSession = new FileSession(filename, docInfo.filePath, docInfo.author, docInfo.loginUser,
-                                docInfo.mail, false);
+                            editSession = new FileSession(docInfo.uuid, docInfo.filePath, docInfo.loginUser, docInfo.author, false);
                         else
-                            editSession = new CobaltSession(filename, docInfo.filePath,
-                                docInfo.author, docInfo.loginUser, docInfo.mail, false);
+                            editSession = new CobaltSession(docInfo.uuid, docInfo.filePath, docInfo.loginUser, docInfo.author, false);
                         CobaltSessionManager.Instance.AddSession(editSession);
                     }
 
                     if (stringarr.Length == 4 && context.Request.HttpMethod.Equals(@"GET"))
                     {
-                        //Console.WriteLine("4444...");
-                        //request of checkfileinfo, will be called first
                         using (var memoryStream = new MemoryStream())
                         {
                             var json = new DataContractJsonSerializer(typeof(WopiCheckFileInfo));
@@ -122,15 +120,16 @@ namespace WOPIHostNetV1.util
                     }
                     else if (stringarr.Length == 5 && stringarr[4].Equals(@"contents"))
                     {
-                        //Console.WriteLine("5555...");
-                        // get and put file's content, only for xlsx and pptx
                         if (context.Request.HttpMethod.Equals(@"POST"))
                         {
+                            logger.Info($"进入contents方法，调用了保存。");
+
                             var ms = new MemoryStream();
                             context.Request.InputStream.CopyTo(ms);
                             editSession.Save(ms.ToArray());
                             context.Response.ContentLength64 = 0;
                             context.Response.ContentType = @"text/html";
+                            context.Response.StatusCode = (int)HttpStatusCode.OK;
                         }
                         else
                         {
@@ -138,15 +137,14 @@ namespace WOPIHostNetV1.util
                             context.Response.ContentType = @"application/octet-stream";
                             context.Response.ContentLength64 = content.Length;
                             context.Response.OutputStream.Write(content, 0, content.Length);
+                            context.Response.OutputStream.Flush();
                         }
-                        context.Response.StatusCode = (int)HttpStatusCode.OK;
+                        //context.Response.StatusCode = (int)HttpStatusCode.OK;
                         context.Response.Close();
                     }
                     else if (context.Request.HttpMethod.Equals(@"POST") &&
                         context.Request.Headers["X-WOPI-Override"].Equals("COBALT"))
                     {
-                        //Console.WriteLine("6666...");
-                        //cobalt, for docx and pptx
                         var ms = new MemoryStream();
                         context.Request.InputStream.CopyTo(ms);
                         AtomFromByteArray atomRequest = new AtomFromByteArray(ms.ToArray());
@@ -165,6 +163,7 @@ namespace WOPIHostNetV1.util
                             {
 
                                 editSession.Save();
+                                editSession.fileinfo = new FileInfo(docInfo.filePath);
                             }
                         }
                         var response = requestBatch.SerializeOutputToProtocol(protocolVersion);
@@ -183,8 +182,6 @@ namespace WOPIHostNetV1.util
                         context.Request.Headers["X-WOPI-Override"].Equals("REFRESH_LOCK"))
                         )
                     {
-                        //Console.WriteLine("7777...");
-                        //lock, for xlsx and pptx
                         context.Response.ContentLength64 = 0;
                         context.Response.ContentType = @"text/html";
                         context.Response.StatusCode = (int)HttpStatusCode.OK;
@@ -192,35 +189,23 @@ namespace WOPIHostNetV1.util
                     }
                     else
                     {
-                        Console.WriteLine(@"Invalid request parameters");
-                        ErrorResponse(context, @"Invalid request cobalt parameter");
+                        logger.Info($"请求参数无效，参数为：{stringarr}，token参数为：{access_token}");
+                        ErrorResponse(context, @"无效的请求参数");
                     }
-
-                    Console.WriteLine("ok...");
+                    logger.Info($"当前请求处理完成...");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(@"process request exception:" + ex.Message);
+                    logger.Error($"请求处理发生异常：{ex.Message}");
                 }
-                m_listener.BeginGetContext(ProcessRequest, m_listener);
+                m_listener.BeginGetContext(new AsyncCallback(ProcessRequest), m_listener);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(@"get request context:" + ex.Message);
+                logger.Error($"获取请求时发生异常：{ex.Message}");
                 return;
             }
         }
-
-        //IDFSHandle _handle = new GridFSHandle();
-        //private Stream GetFileById(string fileId)
-        //{
-        //    return _handle.GetFile(fileId);
-        //}
-
-        //private string GetFileName(string fileId)
-        //{
-        //    return _handle.GetFileName(fileId);
-        //}
 
         public void StreamToFile(Stream stream, string fileName)
         {

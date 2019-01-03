@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Cobalt;
-using WOPIHostNetV1.model;
+using Newtonsoft.Json;
+using WOPIHostNetV2.model;
 
-namespace WOPIHostNetV1.util
+namespace WOPIHostNetV2.util
 {
     public class CobaltSession : EditSession
     {
         private readonly CobaltFile m_cobaltFile;
         private readonly DisposalEscrow m_disposal;
 
-        public CobaltSession(string sessionId, string filePath, string login = "Anonymous", string name = "Anonymous", string email = "", bool isAnonymous = true)
-            : base(sessionId, filePath, login, name, email, isAnonymous)
+        /// <summary>
+        /// 查看Session
+        /// </summary>
+        /// <param name="sessionId">当前session Id</param>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="login">当前登录用户</param>
+        /// <param name="name">文件所属人（作者）</param>
+        /// <param name="isAnonymous">是否匿名</param>
+        public CobaltSession(string sessionId, string filePath, string login = "Anonymous", string name = "Anonymous", bool isAnonymous = true)
+            : base(sessionId, filePath, login, name, isAnonymous)
         {
             m_disposal = new DisposalEscrow(m_sessionId);
 
@@ -50,9 +59,10 @@ namespace WOPIHostNetV1.util
 
             if (m_fileinfo.Exists)
             {
-                String appdata_path = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+                //String appdata_path = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+                String appdata_path = @"C:\temp";
                 appdata_path = Path.Combine(appdata_path, @"WopiCobaltHost");
-                
+                logger.Info($"临时文件家路径：{appdata_path}");
                 if (!Directory.Exists(appdata_path))
                     Directory.CreateDirectory(appdata_path);
                 String cache_file = Path.Combine(appdata_path, m_fileinfo.Name);
@@ -60,13 +70,6 @@ namespace WOPIHostNetV1.util
                     File.Delete(cache_file);
                 File.Copy(m_fileinfo.FullName, cache_file, true);
                 var file_atom = FileAtom.FromExisting(cache_file, m_disposal);
-                //if want to avoid temp file, you can use memory Atom below
-                //MemoryStream ms = new MemoryStream();
-                //using (FileStream fileStream = m_fileinfo.OpenRead())
-                //{
-                //    fileStream.CopyTo(ms);
-                //}
-                //var src_atom = new AtomFromByteArray(ms.ToArray());
                 Cobalt.Metrics o1;
                 m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).SetStream(RootId.Default.Value, file_atom, out o1);
                 m_cobaltFile.GetCobaltFilePartition(FilePartitionId.Content).GetStream(RootId.Default.Value).Flush();
@@ -106,6 +109,7 @@ namespace WOPIHostNetV1.util
         {
             WopiCheckFileInfo cfi = null;
             
+            //当是否禁止编辑为false，是否禁止预览为ture时，此时的状态为编辑状态
             switch (converBS64(operType))
             {
                 case "1":
@@ -139,12 +143,12 @@ namespace WOPIHostNetV1.util
                     cfi.DisablePrint = true;
                     cfi.DisableTranslation = true;
                     cfi.DisableBrowserCachingOfUserContent = true;
-                    Console.WriteLine("编辑权限");
                     cfi.ReadOnly = false;
                     cfi.UserCanWrite = true;
                     cfi.WebEditingDisabled = false;
                     cfi.RestrictedWebViewOnly = false;
 
+                    logger.Info($"编辑状态");
                     break;
                 case "3":
                     cfi = new WopiCheckFileInfo();
@@ -177,11 +181,12 @@ namespace WOPIHostNetV1.util
                     cfi.DisablePrint = true;
                     cfi.DisableTranslation = true;
                     cfi.DisableBrowserCachingOfUserContent = true;
-                    Console.WriteLine("批注权限");
                     cfi.ReadOnly = false;
                     cfi.UserCanWrite = true;
                     cfi.WebEditingDisabled = false;
                     cfi.RestrictedWebViewOnly = false;
+
+                    logger.Info($"批注状态");
                     break;
                 default:
                     cfi = new WopiCheckFileInfo();
@@ -214,15 +219,15 @@ namespace WOPIHostNetV1.util
                     cfi.DisablePrint = true;
                     cfi.DisableTranslation = true;
                     cfi.DisableBrowserCachingOfUserContent = true;
-                    Console.WriteLine("只读权限");
                     cfi.ReadOnly = true;
                     cfi.UserCanWrite = true;
                     cfi.WebEditingDisabled = true;
                     cfi.RestrictedWebViewOnly = true;
+
+                    logger.Info($"只读状态");
                     break;
             }
-
-
+            logger.Info($"该文件信息为：{JsonConvert.SerializeObject(cfi)}");
             return cfi;
         }
 

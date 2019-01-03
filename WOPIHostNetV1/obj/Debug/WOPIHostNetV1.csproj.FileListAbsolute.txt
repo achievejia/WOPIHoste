@@ -7,3 +7,4 @@ D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNetV1\obj\Debug\WOPIHostNetV1.cs
 D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNetV1\obj\Debug\WOPIHostNetV1.csproj.CopyComplete
 D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNetV1\obj\Debug\WOPIHostNetV1.exe
 D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNetV1\obj\Debug\WOPIHostNetV1.pdb
+D:\Data\Code\Net\V2018\NetCore\WOPIHost\WOPIHostNetV1\obj\Debug\WOPIHostNetV1.csprojAssemblyReference.cache
